@@ -236,7 +236,7 @@ describe('PUT - Teste - gestão de livros', () => {
                method: 'PUT',
                url: 'books/17',
 
-               headers: { Authorization: token },
+               headers: { 'Authorization': token },
                body: {
                     title: 'trocado58572',
                     author: 'trocado2876',
