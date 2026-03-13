@@ -101,3 +101,15 @@ Cypress.Commands.add('criarLivro', (title, token,author) => {
             return response.body.book.id
           })
 })
+/*
+Cypress.Commands.add('criarReserva', () => {
+  return cy.request({
+    method: 'POST',
+    url: '/reservations',
+    body: {
+      bookId: 1,
+      customerName: 'Richard Test'
+    }
+  })
+})
+  */

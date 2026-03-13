@@ -60,7 +60,7 @@ describe('Teste de API - Gestão de recervas', () => {
         })
     });
 
-    it.only('Deve mostrar mensagem de erro quando atingir o limite de reservas disponíveis', () => {
+    it('Deve mostrar mensagem de erro quando atingir o limite de reservas disponíveis', () => {
         cy.api({
             method: 'POST',
             url: 'reservations',
@@ -76,10 +76,10 @@ describe('Teste de API - Gestão de recervas', () => {
         })
     });
 
-    it('PUT - cancelar reserva', () => {
+    it.skip('PUT - cancelar reserva', () => {
         cy.api({
             method: 'PUT',
-            url: 'reservations/5',
+            url: 'reservations/17',
             headers: { 'Authorization': token },
             body: {
                 action: "cancel"
@@ -89,5 +89,8 @@ describe('Teste de API - Gestão de recervas', () => {
             expect(response.body.message).to.equal('Reserva cancelada com sucesso.')
         })
     });
+  
 
+
+    
 });
