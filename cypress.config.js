@@ -6,7 +6,7 @@ module.exports = defineConfig({
       // implement node event listeners here
     },
     baseUrl: 'http://localhost:3000/api/',
-    projectId: "51vfq2", 
+    projectId: "rpii6n", 
     video: true
   },
 });
