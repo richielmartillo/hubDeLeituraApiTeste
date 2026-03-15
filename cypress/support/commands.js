@@ -25,7 +25,7 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 Cypress.Commands.add('geraToken', (email, senha) => {
-    cy.request({
+   return cy.api({
         method: 'POST',
         url: 'login',
         body: {
@@ -40,7 +40,7 @@ Cypress.Commands.add('geraToken', (email, senha) => {
 })
 
 Cypress.Commands.add('cadastrarUsuario', (nome, email, senha) => {
-    cy.api({
+   return cy.api({
         method: 'POST',
         url: 'users',
         body: {
@@ -53,34 +53,12 @@ Cypress.Commands.add('cadastrarUsuario', (nome, email, senha) => {
         return response.body.user.id
     })
 })
-/*
-Cypress.Commands.add('atualizarLivro', (token, bookId, title, author) => {
-  return cy.api({
-    method: 'POST',
-    url: `books/${bookId}`,
-    headers: { 'Authorization' : token },
-    body: {
-      title,
-      author,
-      description: 'Descrição atualizada do livro',
-      category: 'Categoria atualizada',
-      editor: 'Editora Atualizada',
-      language: 'Português',
-      publication_year: 2000,
-      pages: 300,
-      format: 'Físico',
-      total_copies: 10,
-      available_copies: 5
-    }
-    
-  })
-})
-*/
+
 Cypress.Commands.add('criarLivro', (title, token,author) => {
-    cy.api({
+  return  cy.api({
                method: 'POST',
                url: 'books',
-               headers: { Authorization: `Bearer ${token}` },
+               headers: { 'Authorization': token },
                body: {
                     "title": title,
                     "author": author,
@@ -101,15 +79,13 @@ Cypress.Commands.add('criarLivro', (title, token,author) => {
             return response.body.book.id
           })
 })
-/*
-Cypress.Commands.add('criarReserva', () => {
-  return cy.request({
-    method: 'POST',
-    url: '/reservations',
-    body: {
-      bookId: 1,
-      customerName: 'Richard Test'
-    }
-  })
+
+Cypress.Commands.add('atualizarLivro', (token, bookId, dadosDoLivro) => {
+ return cy.api({
+
+               method: 'PUT',
+               url: `books/${bookId}`,
+               headers: { 'Authorization': token },
+               body: dadosDoLivro
+          })
 })
-  */

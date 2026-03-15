@@ -9,14 +9,16 @@ describe('Testes da Funcionalidade Catálogo de Livros', () => {
           })
      });
 
-
+describe('Gestão de catalogo livros', () => {
      it('Deve listar livros com sucesso', () => {
           cy.api({
                method: 'GET', url: 'books', headers: { 'Authorization': token }
           }).should(response => {
                expect(response.status).to.equal(200), expect(response.body.books).to.be.an('array')
           })
-     });
+     });  
+});
+   
 
 
      it('Deve validar propriedades de um livro', () => {
@@ -27,19 +29,38 @@ describe('Testes da Funcionalidade Catálogo de Livros', () => {
           }).should(response => { expect(response.status).to.equal(200), expect(response.body.books[0]).to.have.property('id'), expect(response.body.books[0]).to.have.property('title'), expect(response.body.books[0]).to.have.property('author') })
      });
 
-     it('Deve listar um livro com sucesso buscando por ID', () => {
-          cy.api({
-               method: 'GET',
-               url: 'books/2',
-               headers: { 'Authorization': token }
 
-          }).should(response => {
-               expect(response.status).to.equal(200),
-                    expect(response.body.book).to.have.property('id', 2),
-                    expect(response.body.book).to.have.property('title'),
-                    expect(response.body.book).to.have.property('author')
-          })
-     });
+
+   
+it('Deve listar um livro com sucesso buscando por ID de forma dinâmica', () => {
+  cy.api({
+    method: 'GET',
+    url: 'books',
+    headers: { Authorization: token }
+  }).then((listResponse) => {
+    expect(listResponse.status).to.equal(200)
+    expect(listResponse.body.books.length).to.be.greaterThan(0)
+
+    const bookId = listResponse.body.books[0].id
+
+    cy.api({
+      method: 'GET',
+      url: `books/${bookId}`,
+      headers: { Authorization: token }
+    }).should((response) => {
+      expect(response.status).to.equal(200)
+      expect(response.body.book).to.have.property('id', bookId)
+      expect(response.body.book).to.have.property('title')
+      expect(response.body.book).to.have.property('author')
+    })
+  })
+})
+
+
+
+
+
+
 
      it('Deve listar autores com sucesso', () => {
           cy.api({
@@ -120,46 +141,17 @@ it('DELETE - Deve deletar um livro previamente cadastrado', () => {
 });
 
 describe('POST - Teste de API - gestão de livros', () => {
-     let token
+//     let token
 
-     beforeEach(() => {
-          cy.geraToken('admin@biblioteca.com', 'admin123').then(tkn => {
-               token = tkn
-          })
-     });
-
-     it('Deve adicionar um livro com sucesso', () => {
-          let title = `Dom${Date.now()}Casmurro`
-          let author = `Machado${Date.now()}Asis`
-          cy.api({
-               method: 'POST',
-               url: 'books',
-               headers: { 'Authorization': token },
-               body: {
-                    "title": title,
-                    "author": author,
-                    "description": "Romance naturalista que retrata a vida em um cortiço",
-                    "category": "Literatura Brasileira",
-                    "isbn": "978-85-260-1320-6",
-                    "editor": "Editora Ática",
-                    "language": "Português",
-                    "publication_year": 1890,
-                    "pages": 312,
-                    "format": "Físico",
-                    "total_copies": 4,
-                    "available_copies": 4
-               }
-          }).should(response => {
-               expect(response.status).to.equal(201)
-               expect(response.body.message).to.equal('Livro criado com sucesso.')
-          })
-     });
-
+  //   beforeEach(() => {
+    //      cy.geraToken('admin@biblioteca.com', 'admin123').then(tkn => {
+      //         token = tkn
+        
      it('POST - Deve validar a mensagem de erro do livro com dados inválidos', () => {
           cy.api({
                method: 'POST',
                url: 'books',
-               headers: { 'Authorization': token },
+               headers: {'Authorization': token },
                body: {
                     "title": "",
                     "author": "",
@@ -180,8 +172,14 @@ describe('POST - Teste de API - gestão de livros', () => {
                expect(response.body.message).to.equal('"title" is not allowed to be empty')
                expect(response.body.field).to.equal('title')
           })
-     });
-});
+     }); 
+     })
+   //  });
+
+     
+
+    
+// });
 
 
 describe('PUT - Teste API - Grstão de livros', () => {
@@ -192,29 +190,32 @@ describe('PUT - Teste API - Grstão de livros', () => {
           })
      })
 
-     it('Deve atualizar com sucesso o livro previamente criado', () => {
-          cy.api({
-               method: 'PUT',
-               url: 'books/17',
-               headers: { 'Authorization': token },
-               body: {
-                    title: 'trocado58572',
-                    author: 'trocado2876',
-                    description: 'Descrição atualizada do livro',
-                    category: 'Categoria atualizada',
-                    editor: 'Editora Atualizada',
-                    language: 'Português',
-                    publication_year: 2000,
-                    pages: 300,
-                    format: 'Físico',
-                    total_copies: 10,
-                    available_copies: 5
-               }
-          }).should((response) => {
-               expect(response.status).to.equal(200)
-               expect(response.body.message).to.equal('Livro atualizado com sucesso.')
-          })
-     })
+
+
+it('Deve atualizar com sucesso o livro previamente criado', () => {
+  const bookId = 17
+
+  const dadosDoLivro = {
+    title: 'trocado58572',
+    author: 'trocado2876',
+    description: 'Descrição atualizada do livro',
+    category: 'Categoria atualizada',
+    editor: 'Editora Atualizada',
+    language: 'Português',
+    publication_year: 2000,
+    pages: 300,
+    format: 'Físico',
+    total_copies: 10,
+    available_copies: 5
+  }
+
+  cy.atualizarLivro(token, bookId, dadosDoLivro).should((response) => {
+    expect(response.status).to.equal(200)
+    expect(response.body.message).to.equal('Livro atualizado com sucesso.')
+  })
+})
+
+
 });
 
 describe('PUT - Teste - gestão de livros', () => {
@@ -231,29 +232,32 @@ describe('PUT - Teste - gestão de livros', () => {
           })
 
      })
-     it('deve atualizar o livro com sucesso', () => {
-          cy.api({
-               method: 'PUT',
-               url: 'books/17',
+     
+    
+     it('deve atualizar o livro com sucesso - de forma dinamica', () => {
+       const title = `Dom ${Date.now()}`
+       const author = `Machado ${Date.now()}`
+       const dadosAtualizados = {
+    title: `Livro atualizado ${Date.now()}`,
+    author: `Autor atualizado ${Date.now()}`,
+    description: 'Descrição atualizada do livro',
+    category: 'Categoria atualizada',
+    editor: 'Editora Atualizada',
+    language: 'Português',
+    publication_year: 2000,
+    pages: 300,
+    format: 'Físico',
+    total_copies: 10,
+    available_copies: 5
+  }
 
-               headers: { 'Authorization': token },
-               body: {
-                    title: 'trocado58572',
-                    author: 'trocado2876',
-                    description: 'Descrição atualizada do livro',
-                    category: 'Categoria atualizada',
-                    editor: 'Editora Atualizada',
-                    language: 'Português',
-                    publication_year: 2000,
-                    pages: 300,
-                    format: 'Físico',
-                    total_copies: 10,
-                    available_copies: 5
-               },
-          }).should(response => {
-               expect(response.status).to.equal(200)
-               expect(response.body.message).to.equal('Livro atualizado com sucesso.')
-          })
+    cy.criarLivro(title, token, author).then((bookId) => {
+    cy.atualizarLivro(token, bookId, dadosAtualizados).should((response) => {
+    expect(response.status).to.equal(200)
+    expect(response.body.message).to.equal('Livro atualizado com sucesso.')
+  })
+})
+
      });
 });
 
